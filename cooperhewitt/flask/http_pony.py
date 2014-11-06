@@ -13,7 +13,7 @@ def update_app_config(app, cfg):
 
     for k, v in cfg.items('http_pony'):
 
-        key = "HTTP_PONY_%s" % k.upper()
+        k = "HTTP_PONY_%s" % k.upper()
         update[k] = v
 
     app.config.update(**update)
@@ -23,7 +23,7 @@ def get_local_path(app, key='file'):
     path = flask.request.args.get(key)
     logging.debug("request path is %s" % path)
 
-    root = app.config.get('HTTP_PONY_LOCAL_ROOT', None)
+    root = app.config.get('HTTP_PONY_LOCAL_PATH_ROOT', None)
     logging.debug("image root is %s" % root)
 
     if not root:
@@ -50,18 +50,21 @@ def get_upload_path(app, key='file'):
 
     file = flask.request.files[key]
 
-    if file and allowed_file(file.filename):
+    if file and allowed_file(app, file.filename):
 
-        tmpdir = tempfile.gettempdir()
+        root = app.config.get('HTTP_PONY_UPLOAD_PATH_ROOT', None)
+
+        if not root:
+            root = tempfile.gettempdir()
 
         rand = base64.urlsafe_b64encode(os.urandom(12))
         secure = werkzeug.secure_filename(file.filename)
         fname = "http-pony-%s-%s" % (rand, secure)
 
-        safe = werkzeug.security.safe_join(tmpdir, fname)
+        safe = werkzeug.security.safe_join(root, fname)
 
         if not safe:
-            raise Exception, "'%s' + '%s' considered harmful" % (tmpdir, fname)
+            raise Exception, "'%s' + '%s' considered harmful" % (root, fname)
 
         logging.debug("save upload to %s" % safe)
 
