@@ -1,10 +1,16 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup, find_packages
+
+packages = find_packages()
+desc = open("README.md").read(),
+
+print packages
 
 setup(name='cooperhewitt-flask',
-      version='0.2',
+      version='0.3',
       description='Cooper Hewitt utility functions for Flask applications',
+      long_description=desc,
       author='Cooper Hewitt Smithsonian Design Museum',
       url='https://github.com/cooperhewitt/py-flask',
       requires=[
@@ -13,10 +19,7 @@ setup(name='cooperhewitt-flask',
         'werkzeug',
         'werkzeug.security',
         ],
-      packages=[
-          'cooperhewitt',
-          'cooperhewitt.flask'
-      ],
+      packages=packages,
       scripts=[],
-      download_url='https://github.com/cooperhewitt/py-cooperhewitt-flask/releases/tag/v0.2',
+      download_url='https://github.com/cooperhewitt/py-cooperhewitt-flask/releases/tag/v0.3',
       license='BSD')
