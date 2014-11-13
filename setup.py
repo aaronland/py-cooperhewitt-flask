@@ -9,7 +9,7 @@ setup(name='cooperhewitt-flask',
       url='https://github.com/cooperhewitt/py-flask',
       requires=[
         'flask',
-        'flask-cors',
+        'flaskcors',
         'werkzeug',
         'werkzeug.security',
         ],
