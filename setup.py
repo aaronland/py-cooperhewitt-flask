@@ -5,12 +5,10 @@ from setuptools import setup, find_packages
 packages = find_packages()
 desc = open("README.md").read(),
 
-print packages
-
 setup(
     name='cooperhewitt.flask',
     namespace_packages=['cooperhewitt'],
-    version='0.3',
+    version='0.31',
     description='Cooper Hewitt utility functions for Flask applications',
     long_description=desc,
     author='Cooper Hewitt Smithsonian Design Museum',

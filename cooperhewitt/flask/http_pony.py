@@ -2,10 +2,19 @@ import os.path
 import base64
 import tempfile
 import logging
+import ConfigParser
 
 import flask
 import werkzeug
 import werkzeug.security
+
+def update_app_config_from_file(app, file):
+
+    cfg = ConfigParser.ConfigParser()
+    cfg.read(file)
+    
+    update_app_config(app, cfg)
+    return cfg
 
 def update_app_config(app, cfg):
 
@@ -16,6 +25,7 @@ def update_app_config(app, cfg):
         k = "HTTP_PONY_%s" % k.upper()
         update[k] = v
 
+    update['HTTP_PONY_INIT'] = True
     app.config.update(**update)
 
 def get_local_path(app, key='file'):
