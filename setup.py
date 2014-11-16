@@ -8,7 +8,7 @@ desc = open("README.md").read(),
 setup(
     name='cooperhewitt.flask',
     namespace_packages=['cooperhewitt'],
-    version='0.31',
+    version='0.32',
     description='Cooper Hewitt utility functions for Flask applications',
     long_description=desc,
     author='Cooper Hewitt Smithsonian Design Museum',

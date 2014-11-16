@@ -7,6 +7,39 @@ import ConfigParser
 import flask
 import werkzeug
 import werkzeug.security
+from werkzeug.contrib.fixers import ProxyFix
+
+# not tested
+
+def setup_flask_app(name):
+
+    app = flask.Flask(__name__)
+    app.wsgi_app = ProxyFix(app.wsgi_app)
+
+    def before_first():
+
+        try:
+
+            if app.config.get('HTTP_PONY_INIT', None):
+                return True
+
+            if os.environ.get("PALETTE_SERVER_CONFIG"):
+            
+                cfg = os.environ.get("PALETTE_SERVER_CONFIG")
+                cfg = update_app_config_from_file(app, cfg)
+
+                return True
+
+        except Exception, e:
+
+            logging.error("failed to load config file, because %s" % e)
+            flask.abort(500)
+
+        logging.error("missing config file")
+        flask.abort(500)
+
+    app.before_first_request(before_first)
+    return app
 
 def update_app_config_from_file(app, file):
 
