@@ -1,7 +1,11 @@
+import sys
+
 import os.path
 import base64
 import tempfile
 import logging
+
+import optparse
 import ConfigParser
 
 import flask
@@ -11,20 +15,63 @@ from werkzeug.contrib.fixers import ProxyFix
 
 import re
 
-def setup_flask_app(name):
+def validate_app_name(name):
 
     pattern = re.compile("^[a-zA-Z_]+$")
 
     if not pattern.match(name):
         raise Exception, "invalid app name"
 
+    return True
+
+def run_from_cli(app):
+
+    parser = optparse.OptionParser()
+
+    parser.add_option("-c", "--config", dest="config", help="", action="store", default=None)
+    parser.add_option("-v", "--verbose", dest="verbose", help="enable chatty logging; default is false", action="store_true", default=False)
+
+    opts, args = parser.parse_args()
+
+    if opts.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+        logging.debug("verbose logging is enabled")
+    else:
+        logging.basicConfig(level=logging.INFO)
+
+    kwargs = {}
+
+    # if not the os.environ('<APP_NAME>_CONFIG')
+
+    if opts.config:
+
+        cfg = update_app_config_from_file(app, opts.config)
+
+        port = cfg.get('flask', 'port')
+        kwargs['port'] = int(port)
+
+    app.run(**kwargs)
+
+def setup_flask_app(name):
+
+    validate_app_name(name)
+
     app = flask.Flask(name)
     app.wsgi_app = ProxyFix(app.wsgi_app)
 
-    def before_first():
+    config_flag = "%s_CONFIG" % name.upper()
+    init_flag = "HTTP_PONY_INIT"
 
-        config_flag = "%s_CONFIG" % name.upper()
-        init_flag = "HTTP_PONY_INIT"
+    """
+    if not app.config.get(init_flag, None):
+
+        cfg = os.environ.get(config_flag)
+
+        if not cfg or not os.path.exists(cfg):
+            raise Exception, "missing config file"
+    """
+
+    def before_first():
 
         try:
 
