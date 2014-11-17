@@ -9,23 +9,31 @@ import werkzeug
 import werkzeug.security
 from werkzeug.contrib.fixers import ProxyFix
 
-# not tested
+import re
 
 def setup_flask_app(name):
 
-    app = flask.Flask(__name__)
+    pattern = re.compile("^[a-zA-Z_]+$")
+
+    if not pattern.match(name):
+        raise Exception, "invalid app name"
+
+    app = flask.Flask(name)
     app.wsgi_app = ProxyFix(app.wsgi_app)
 
     def before_first():
 
+        config_flag = "%s_CONFIG" % name.upper()
+        init_flag = "HTTP_PONY_INIT"
+
         try:
 
-            if app.config.get('HTTP_PONY_INIT', None):
+            if app.config.get(init_flag, None):
                 return True
 
-            if os.environ.get("PALETTE_SERVER_CONFIG"):
+            if os.environ.get(config_flag):
             
-                cfg = os.environ.get("PALETTE_SERVER_CONFIG")
+                cfg = os.environ.get(config_flag)
                 cfg = update_app_config_from_file(app, cfg)
 
                 return True
