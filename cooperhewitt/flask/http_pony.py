@@ -30,6 +30,7 @@ def run_from_cli(app):
 
     parser.add_option("-c", "--config", dest="config", help="", action="store", default=None)
     parser.add_option("-v", "--verbose", dest="verbose", help="enable chatty logging; default is false", action="store_true", default=False)
+    parser.add_option("-d", "--debug", dest="debug", help="enable Flask debugging default is false", action="store_true", default=False)
 
     opts, args = parser.parse_args()
 
@@ -50,6 +51,9 @@ def run_from_cli(app):
         port = cfg.get('flask', 'port')
         kwargs['port'] = int(port)
 
+    if opts.debug:
+        kwargs['debug'] = True
+
     app.run(**kwargs)
 
 def setup_flask_app(name):
@@ -61,15 +65,6 @@ def setup_flask_app(name):
 
     config_flag = "%s_CONFIG" % name.upper()
     init_flag = "HTTP_PONY_INIT"
-
-    """
-    if not app.config.get(init_flag, None):
-
-        cfg = os.environ.get(config_flag)
-
-        if not cfg or not os.path.exists(cfg):
-            raise Exception, "missing config file"
-    """
 
     def before_first():
 
@@ -114,6 +109,7 @@ def update_app_config(app, cfg):
         update[k] = v
 
     update['HTTP_PONY_INIT'] = True
+
     app.config.update(**update)
 
 def get_local_path(app, key='file'):
@@ -149,7 +145,12 @@ def get_local_path(app, key='file'):
 
 def get_upload_path(app, key='file'):
 
-    file = flask.request.files[key]
+    logging.debug("upload file with key: %s" % key)
+
+    try:
+        file = flask.request.files.get(key, None)
+    except Exception, e:
+        raise Exception, "failed to process request %s" % e
 
     if file and allowed_file(app, file.filename):
 
@@ -161,6 +162,8 @@ def get_upload_path(app, key='file'):
         rand = base64.urlsafe_b64encode(os.urandom(12))
         secure = werkzeug.secure_filename(file.filename)
         fname = "http-pony-%s-%s" % (rand, secure)
+
+        logging.debug("check %s + %s" % (root, fname))
 
         safe = werkzeug.security.safe_join(root, fname)
 

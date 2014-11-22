@@ -8,7 +8,7 @@ desc = open("README.md").read(),
 setup(
     name='cooperhewitt.flask',
     namespace_packages=['cooperhewitt'],
-    version='0.34',
+    version='0.35',
     description='Cooper Hewitt utility functions for Flask applications',
     long_description=desc,
     author='Cooper Hewitt Smithsonian Design Museum',
@@ -21,5 +21,5 @@ setup(
     ],
     packages=packages,
     scripts=[],
-    download_url='https://github.com/cooperhewitt/py-cooperhewitt-flask/releases/tag/v0.3',
+    download_url='https://github.com/cooperhewitt/py-cooperhewitt-flask/releases/tag/v0.35',
     license='BSD')
