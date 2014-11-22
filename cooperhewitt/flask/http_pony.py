@@ -114,7 +114,7 @@ def update_app_config(app, cfg):
 
 def get_local_path(app, key='file'):
 
-    path = flask.request.args.get(key)
+    path = flask.request.args.get(key, None)
     logging.debug("request path is %s" % path)
 
     if not path:
@@ -125,7 +125,6 @@ def get_local_path(app, key='file'):
 
     if not root:
         raise Exception, "image root is not defined"
-
 
     if root:
 
