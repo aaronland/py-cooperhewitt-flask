@@ -61,9 +61,13 @@ app's settings accordingly.
 
 	    http_pony.run_from_cli(app)
 
-And then 
+And then:
 
 	$> python example-server.py -c example-server.cfg
+
+And then:
+
+	$> curl -X POST -F 'file=@/path/to/file' http://localhost:5000/example'
 
 ## Config
 
